@@ -1,0 +1,37 @@
+<Solution>
+  <PropertyGroup Name="kindomPairUp" Version="2.0.5.0" Type="CocosStudio" />
+  <SolutionFolder>
+    <Group ctype="ResourceGroup">
+      <RootFolder Name=".">
+        <Project Name="MainMenuScene.csd" />
+        <Folder Name="ipad">
+          <Image Name="CloseNormal.png" />
+          <Image Name="CloseSelected.png" />
+          <Image Name="HelloWorld.png" />
+        </Folder>
+        <Folder Name="ipadhd">
+          <Image Name="CloseNormal.png" />
+          <Image Name="CloseSelected.png" />
+          <Image Name="HelloWorld.png" />
+        </Folder>
+        <Folder Name="iphone">
+          <Folder Name="MainMenu">
+            <Image Name="mainMenu_start_down.png" />
+            <Image Name="mainMenu_start_up.png" />
+            <Image Name="mainMenu_title.png" />
+          </Folder>
+          <Folder Name="ui">
+            <Image Name="box.png" />
+            <Image Name="box_bg.png" />
+            <Image Name="field.png" />
+            <Image Name="grass.png" />
+            <Image Name="pause_bg.png" />
+            <Image Name="pause_down.png" />
+            <Image Name="pause_up.png" />
+          </Folder>
+        </Folder>
+        <Project Name="GameScene.csd" />
+      </RootFolder>
+    </Group>
+  </SolutionFolder>
+</Solution>
