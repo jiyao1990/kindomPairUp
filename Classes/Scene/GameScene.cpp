@@ -31,10 +31,8 @@ Scene* GameScene::createScene()
 
 GameScene::GameScene()
 {
-    chooseCoord.hor = 0;
-    chooseCoord.row = 0;
-    endCoord.hor = 0;
-    endCoord.row = 0;
+    chooseCard = NULL;
+    endCard = NULL;
     startPoint.set(0, 0);
     endPoint.set(0, 0);
     box = NULL;
@@ -43,10 +41,8 @@ GameScene::GameScene()
 }
 GameScene::~GameScene()
 {
-    chooseCoord.hor = 0;
-    chooseCoord.row = 0;
-    endCoord.hor = 0;
-    endCoord.row = 0;
+    chooseCard = NULL;
+    endCard = NULL;
     startPoint.set(0, 0);
     endPoint.set(0, 0);
     box = NULL;
@@ -118,11 +114,9 @@ void GameScene::initGame()
             gameTile[i][j] = CardFactory::getCard(n, TypeLevel_1);
             
             box->addChild(gameTile[i][j]);
-//            log("%f,%f",(box->getContentSize().width / TileRow) * (j + 0.5),(box->getContentSize().height / TileHor) * (i + 0.5));
-            Coord _coord;
-            _coord.hor = i;
-            _coord.row = j;
-            setPositionByCoor(_coord);
+            log("%f,%f",(box->getContentSize().width / TileRow) * (j + 0.5),(box->getContentSize().height / TileHor) * (i + 0.5));
+            gameTile[i][j]->setCoord(i,j);
+            setPositionByCoor(gameTile[i][j]);
             
         }
         
@@ -133,10 +127,9 @@ void GameScene::initGame()
     for (int i = 0 ; i < TileHor; i ++) {
         
         for (int j= 0 ; j < TileRow; j++) {
-            Coord _coord;
-            _coord.hor = i;
-            _coord.row = j;
-            while (checkIsCanPairUp(_coord)) {
+//            gameTile[i][j]->setCoord(Vec2(i, j));
+            gameTile[i][j]->setCoord(i,j);
+            while (checkIsCanPairUp(gameTile[i][j])) {
                 GameType n = (GameType)createRandomValue((int)GameType_house, (int)GameType_traffic);
                 
                 gameTile[i][j]->changeCard(n, TypeLevel_1);
@@ -146,37 +139,30 @@ void GameScene::initGame()
     
 }
 
-bool GameScene::checkIsCanPairUp(Coord coord)
+bool GameScene::checkIsCanPairUp(CardSprite* card)
 {
     if (pairUpVec.size() > 0) {
         pairUpVec.clear();
     }
-    Coord _coord = coord;
-    GameType type = gameTile[_coord.hor][_coord.row]->getType();
-    TypeLevel _level = gameTile[_coord.hor][_coord.row]->getLevel();
+    GameType type = gameTile[card->getCoord().hor][card->getCoord().row]->getType();
+    TypeLevel _level = gameTile[card->getCoord().hor][card->getCoord().row]->getLevel();
     int count = 1;
     bool flag = false;
-//    CCLOG("%d,%d,%d",coord.hor,coord.row,type);
+//    CCLOG("%d,%d,%d",card.hor,card.row,type);
     //上边
-    for (int i = _coord.hor + 1 ; i < TileHor; i ++) {
-        if (type == gameTile[i][_coord.row]->getType() && _level == gameTile[i][_coord.row]->getLevel()) {
+    for (int i = card->getCoord().hor + 1 ; i < TileHor; i ++) {
+        if (type == gameTile[i][card->getCoord().row]->getType() && _level == gameTile[i][card->getCoord().row]->getLevel()) {
             count ++;
-            Coord tempCoord;
-            tempCoord.hor = i;
-            tempCoord.row = _coord.row;
-            pairUpVec.push_back(tempCoord);
+            pairUpVec.push_back(gameTile[i][card->getCoord().row]);
         }else{
             break;
         }
     }
     //下边
-    for (int i = _coord.hor - 1; i >= 0; i --) {
-        if (type == gameTile[i][_coord.row]->getType() && _level == gameTile[i][_coord.row]->getLevel()) {
+    for (int i = card->getCoord().hor - 1; i >= 0; i --) {
+        if (type == gameTile[i][card->getCoord().row]->getType() && _level == gameTile[i][card->getCoord().row]->getLevel()) {
             count ++;
-            Coord tempCoord;
-            tempCoord.hor = i;
-            tempCoord.row = _coord.row;
-            pairUpVec.push_back(tempCoord);
+            pairUpVec.push_back(gameTile[i][card->getCoord().row]);
         }else{
             break;
         }
@@ -190,25 +176,19 @@ bool GameScene::checkIsCanPairUp(Coord coord)
     }
     
     //右边
-    for (int i = _coord.row + 1; i < TileRow; i ++) {
-        if (type == gameTile[_coord.hor][i]->getType() && _level == gameTile[_coord.hor][i]->getLevel()) {
+    for (int i = card->getCoord().row + 1; i < TileRow; i ++) {
+        if (type == gameTile[card->getCoord().hor][i]->getType() && _level == gameTile[card->getCoord().hor][i]->getLevel()) {
             count ++;
-            Coord tempCoord;
-            tempCoord.hor = _coord.hor;
-            tempCoord.row = i;
-            pairUpVec.push_back(tempCoord);
+            pairUpVec.push_back(gameTile[card->getCoord().hor][i]);
         }else{
             break;
         }
     }
     //左边
-    for (int i = _coord.row - 1; i >= 0; i --) {
-        if (type == gameTile[_coord.hor][i]->getType() && _level == gameTile[_coord.hor][i]->getLevel()) {
+    for (int i = card->getCoord().row - 1; i >= 0; i --) {
+        if (type == gameTile[card->getCoord().hor][i]->getType() && _level == gameTile[card->getCoord().hor][i]->getLevel()) {
             count ++;
-            Coord tempCoord;
-            tempCoord.hor = _coord.hor;
-            tempCoord.row = i;
-            pairUpVec.push_back(tempCoord);
+            pairUpVec.push_back(gameTile[card->getCoord().hor][i]);
         }else{
             break;
         }
@@ -237,8 +217,7 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event)
             if(gameTile[i][j]->getBoundingBox().containsPoint(point))
             {
                 GameType type = gameTile[i][j]->getType();
-                chooseCoord.hor = i;
-                chooseCoord.row = j;
+                chooseCard = gameTile[i][j];
                 gameTile[i][j]->setScale(1.2f);
                 highlightWithType(type);
             }
@@ -258,7 +237,7 @@ void GameScene::onTouchMoved(Touch *touch, Event *unused_event)
 }
 void GameScene::onTouchEnded(Touch *touch, Event *unused_event)
 {
-    if (chooseCoord.row == -1 || chooseCoord.hor == -1) {
+    if (!chooseCard) {
         return;
     }
 
@@ -266,30 +245,20 @@ void GameScene::onTouchEnded(Touch *touch, Event *unused_event)
     endPoint = point;
     float slideX = endPoint.x - startPoint.x;
     float slideY = endPoint.y - startPoint.y;
-    gameTile[chooseCoord.hor][chooseCoord.row]->setScale(1.f);
+    gameTile[chooseCard->getCoord().hor][chooseCard->getCoord().row]->setScale(1.f);
 
     if (fabs(slideX) > fabs(slideY)) {
         
         if (slideX > 50) {
             
-            if (chooseCoord.row < TileRow - 1) {
-                
-                Coord tempCoord;
-                tempCoord.hor = chooseCoord.hor;
-                tempCoord.row = chooseCoord.row + 1;
-                
-                exchangeCard(chooseCoord, tempCoord);
+            if (chooseCard->getCoord().row < TileRow - 1) {
+                exchangeCard(chooseCard, gameTile[chooseCard->getCoord().hor][chooseCard->getCoord().row + 1]);
             }
             
         }else if (slideX < -50){
             
-            if (chooseCoord.row > 0) {
-                
-                Coord tempCoord;
-                tempCoord.hor = chooseCoord.hor;
-                tempCoord.row = chooseCoord.row - 1;
-                
-                exchangeCard(chooseCoord, tempCoord);
+            if (chooseCard->getCoord().row > 0) {
+                exchangeCard(chooseCard, gameTile[chooseCard->getCoord().hor][chooseCard->getCoord().row - 1]);
             }
             
             
@@ -300,24 +269,15 @@ void GameScene::onTouchEnded(Touch *touch, Event *unused_event)
         
         if (slideY > 50) {
             
-            if (chooseCoord.hor < TileHor - 1) {
-                
-                Coord tempCoord;
-                tempCoord.hor = chooseCoord.hor + 1;
-                tempCoord.row = chooseCoord.row;
-                
-                exchangeCard(chooseCoord, tempCoord);
+            if (chooseCard->getCoord().hor < TileHor - 1) {
+                exchangeCard(chooseCard, gameTile[chooseCard->getCoord().hor + 1][chooseCard->getCoord().row]);
 
             }
             
         }else if (slideY < -50){
             
-            if (chooseCoord.hor > 0) {
-                Coord tempCoord;
-                tempCoord.hor = chooseCoord.hor - 1;
-                tempCoord.row = chooseCoord.row;
-                
-                exchangeCard(chooseCoord, tempCoord);
+            if (chooseCard->getCoord().hor > 0) {
+                exchangeCard(chooseCard, gameTile[chooseCard->getCoord().hor - 1][chooseCard->getCoord().row]);
             
             }
             
@@ -332,9 +292,7 @@ void GameScene::onTouchEnded(Touch *touch, Event *unused_event)
         box->getChildByName("mask")->removeFromParent();
     }
     
-    chooseCoord.hor = -1;
-    chooseCoord.row = -1;
-    
+    chooseCard = NULL;
 }
 
 void GameScene::highlightWithType(GameType type)
@@ -376,47 +334,47 @@ void GameScene::handlerMsg(float dt)
     
 }
 
-void GameScene::exchangeCard(Coord coord1, Coord coord2)
+void GameScene::exchangeCard(CardSprite* card1, CardSprite* card2)
 {
     bool isPairUp = false;
     if (!isMoving) {
         log("moving");
         isMoving = true;
-        ActionInterval* move1To2 = MoveTo::create(moveTime, gameTile[coord2.hor][coord2.row]->getPosition());
-        ActionInterval* move2To1 = MoveTo::create(moveTime, gameTile[coord1.hor][coord1.row]->getPosition());
-        gameTile[coord1.hor][coord1.row]->runAction(move1To2);
-        gameTile[coord2.hor][coord2.row]->runAction(move2To1);
+        ActionInterval* move1To2 = MoveTo::create(moveTime, gameTile[card2->getCoord().hor][card2->getCoord().row]->getPosition());
+        ActionInterval* move2To1 = MoveTo::create(moveTime, gameTile[card1->getCoord().hor][card1->getCoord().row]->getPosition());
+        gameTile[card1->getCoord().hor][card1->getCoord().row]->runAction(move1To2);
+        gameTile[card2->getCoord().hor][card2->getCoord().row]->runAction(move2To1);
         
-        CardSprite* temp = gameTile[coord1.hor][coord1.row];
-        gameTile[coord1.hor][coord1.row] = gameTile[coord2.hor][coord2.row];
-        gameTile[coord2.hor][coord2.row] = temp;
+        CardSprite* temp = gameTile[card1->getCoord().hor][card1->getCoord().row];
+        gameTile[card1->getCoord().hor][card1->getCoord().row] = gameTile[card2->getCoord().hor][card2->getCoord().row];
+        gameTile[card2->getCoord().hor][card2->getCoord().row] = temp;
         
         
-        if (checkIsCanPairUp(coord1)) {
+        if (checkIsCanPairUp(card1)) {
             for (int i = 0; i < pairUpVec.size() ; i ++) {
-                Coord _coord = pairUpVec.at(i);
-                gameTile[_coord.hor][_coord.row]->runAction(Sequence::create(MoveTo::create(moveTime, gameTile[coord2.hor][coord2.row]->getPosition()), CallFunc::create(CC_CALLBACK_0(GameScene::pairUpAndLevelUp, this, coord1)), CallFunc::create(CC_CALLBACK_0(GameScene::endMoving, this)), NULL) );
+                CardSprite* _card = pairUpVec.at(i);
+                gameTile[_card->getCoord().hor][_card->getCoord().row]->runAction(Sequence::create(MoveTo::create(moveTime, gameTile[card2->getCoord().hor][card2->getCoord().row]->getPosition()), CallFunc::create(CC_CALLBACK_0(GameScene::pairUpAndLevelUp, this, card2)), CallFunc::create(CC_CALLBACK_0(GameScene::endMoving, this)), NULL) );
             }
             isPairUp = true;
         }else{
             isPairUp = false;
         }
         
-        if (checkIsCanPairUp(coord2)) {
+        if (checkIsCanPairUp(card2)) {
             for (int i = 0; i < pairUpVec.size() ; i ++) {
-                Coord _coord = pairUpVec.at(i);
-                gameTile[_coord.hor][_coord.row]->runAction(Sequence::create(MoveTo::create(moveTime, gameTile[coord1.hor][coord1.row]->getPosition()), CallFunc::create(CC_CALLBACK_0(GameScene::pairUpAndLevelUp, this,coord2)), CallFunc::create(CC_CALLBACK_0(GameScene::endMoving, this)), NULL) );
+                CardSprite* _card = pairUpVec.at(i);
+                gameTile[_card->getCoord().hor][_card->getCoord().row]->runAction(Sequence::create(MoveTo::create(moveTime, gameTile[card1->getCoord().hor][card1->getCoord().row]->getPosition()), CallFunc::create(CC_CALLBACK_0(GameScene::pairUpAndLevelUp, this,card2)), CallFunc::create(CC_CALLBACK_0(GameScene::endMoving, this)), NULL) );
             }
             isPairUp = true;
         }
         
         if (!isPairUp) {
-            gameTile[coord1.hor][coord1.row]->runAction(Sequence::create(DelayTime::create(moveTime), move1To2, CallFunc::create(CC_CALLBACK_0(GameScene::endMoving, this)), NULL) );
-            gameTile[coord2.hor][coord2.row]->runAction(Sequence::create(DelayTime::create(moveTime), move2To1, CallFunc::create(CC_CALLBACK_0(GameScene::endMoving, this)), NULL) );
+            gameTile[card1->getCoord().hor][card1->getCoord().row]->runAction(Sequence::create(DelayTime::create(moveTime), move1To2, CallFunc::create(CC_CALLBACK_0(GameScene::endMoving, this)), NULL) );
+            gameTile[card2->getCoord().hor][card2->getCoord().row]->runAction(Sequence::create(DelayTime::create(moveTime), move2To1, CallFunc::create(CC_CALLBACK_0(GameScene::endMoving, this)), NULL) );
             
-            CardSprite* temp = gameTile[coord1.hor][coord1.row];
-            gameTile[coord1.hor][coord1.row] = gameTile[coord2.hor][coord2.row];
-            gameTile[coord2.hor][coord2.row] = temp;
+            CardSprite* temp = gameTile[card1->getCoord().hor][card1->getCoord().row];
+            gameTile[card1->getCoord().hor][card1->getCoord().row] = gameTile[card2->getCoord().hor][card2->getCoord().row];
+            gameTile[card2->getCoord().hor][card2->getCoord().row] = temp;
             
         }
         
@@ -429,22 +387,22 @@ void GameScene::endMoving()
     isMoving = false;
 }
 
-void GameScene::pairUpAndLevelUp(Coord coord)
+void GameScene::pairUpAndLevelUp(CardSprite* card)
 {
-    GameType _type = gameTile[coord.hor][coord.row]->getType();
-    TypeLevel _level = gameTile[coord.hor][coord.row]->getLevel();
+    GameType _type = gameTile[card->getCoord().hor][card->getCoord().row]->getType();
+    TypeLevel _level = gameTile[card->getCoord().hor][card->getCoord().row]->getLevel();
     if (_level < TypeLevel_5) {
         _level = (TypeLevel)((int)_level + 1);
     }
-    gameTile[coord.hor][coord.row]->changeCard(_type, _level);
+    gameTile[card->getCoord().hor][card->getCoord().row]->changeCard(_type, _level);
     
     for (int i = 0; i < pairUpVec.size() ; i ++) {
-        Coord _coord = pairUpVec.at(i);
-        gameTile[_coord.hor][_coord.row]->removeFromParent();
-        gameTile[_coord.hor][_coord.row]->isPairUp = true;
+        CardSprite* _card = pairUpVec.at(i);
+        gameTile[_card->getCoord().hor][_card->getCoord().row]->removeFromParent();
+        gameTile[_card->getCoord().hor][_card->getCoord().row]->isPairUp = true;
     }
     
-    setPositionByCoor(coord);
+    setPositionByCoor(card);
     
     cardDrop();
 
@@ -454,16 +412,13 @@ void GameScene::cardDrop()
 {
 
     for (int i = 0; i < pairUpVec.size() ; i ++) {
-        Coord _coord = pairUpVec.at(i);
-        for (int m = _coord.hor + 1 ; m < TileHor ; m ++) {
-            if (!gameTile[m][_coord.row]->isPairUp) {
-                Coord tempCoord;
-                tempCoord.hor = m - 1;
-                tempCoord.row = _coord.row;
-                gameTile[m - 1][_coord.row] = gameTile[m][_coord.row];
-                gameTile[m - 1][_coord.row]->isPairUp = false;
-                gameTile[m][_coord.row]->isPairUp = true;
-                setPositionByCoor(tempCoord, true);
+        CardSprite* _card = pairUpVec.at(i);
+        for (int m = _card->getCoord().hor + 1 ; m < TileHor ; m ++) {
+            if (!gameTile[m][_card->getCoord().row]->isPairUp) {
+                gameTile[m - 1][_card->getCoord().row] = gameTile[m][_card->getCoord().row];
+                gameTile[m - 1][_card->getCoord().row]->isPairUp = false;
+                gameTile[m][_card->getCoord().row]->isPairUp = true;
+                setPositionByCoor(gameTile[m - 1][_card->getCoord().row], true);
             }
         }
     }
@@ -471,16 +426,13 @@ void GameScene::cardDrop()
 }
 
 //根据坐标设置位置
-void GameScene::setPositionByCoor(Coord coord, bool isAction)
+void GameScene::setPositionByCoor(CardSprite* card, bool isAction)
 {
-    int i = coord.hor;
-    int j = coord.row;
-    
     if (isAction) {
-        gameTile[i][j]->runAction(MoveTo::create(moveTime, Vec2((box->getContentSize().width / TileRow) * (j + 0.5) ,((box->getContentSize().height - 60) / TileHor) * (i + 0.5) + 5)));
+        card->runAction(MoveTo::create(moveTime, Vec2((box->getContentSize().width / TileRow) * (card->getCoord().row + 0.5) ,((box->getContentSize().height - 60) / TileHor) * (card->getCoord().hor + 0.5) + 5)));
 //        gameTile[i][j]->setMyPosition(Vec2((box->getContentSize().width / TileRow) * (j + 0.5) ,((box->getContentSize().height - 60) / TileHor) * (i + 0.5) + 5));
     }else{
-        gameTile[i][j]->setPosition(Vec2((box->getContentSize().width / TileRow) * (j + 0.5) ,((box->getContentSize().height - 60) / TileHor) * (i + 0.5) + 5));
+        card->setPosition(Vec2((box->getContentSize().width / TileRow) * (card->getCoord().row + 0.5) ,((box->getContentSize().height - 60) / TileHor) * (card->getCoord().hor + 0.5) + 5));
 //        gameTile[i][j]->setMyPosition(Vec2((box->getContentSize().width / TileRow) * (j + 0.5) ,((box->getContentSize().height - 60) / TileHor) * (i + 0.5) + 5));
     }
     

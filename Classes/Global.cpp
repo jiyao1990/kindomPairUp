@@ -10,6 +10,7 @@
 
 Global*  Global::_instance = NULL;
 
+
 Global*  Global::getInstance()
 {
     if (!_instance) {

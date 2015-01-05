@@ -13,6 +13,7 @@
 #include "Global.h"
 
 USING_NS_CC;
+
 class CardSprite : public Sprite {
     
 public:
@@ -23,14 +24,14 @@ public:
     
     void changeCard(GameType _type, TypeLevel _level);
     
-    void moveCard(Vec2 coord);
+    void moveCard(Coord coord);
     
     
     CC_SYNTHESIZE(GameType, m_Type, Type);
     CC_SYNTHESIZE(TypeLevel, m_Level, Level);
 //    CC_SYNTHESIZE(Point, m_Position, MyPosition);
-    CC_SYNTHESIZE(Vec2, m_Coord, Coord);
-    
+    CC_SYNTHESIZE(Coord, m_Coord, Coord);
+    void setCoord(int hor,int row);
     bool isPairUp;
     
 private:

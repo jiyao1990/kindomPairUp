@@ -16,14 +16,6 @@
 #define moveTime 0.2f
 
 USING_NS_CC;
-
-struct Coord {
-    
-    int hor;
-    int row;
-    
-};
-
 class GameScene : public LayerColor
 {
 public:
@@ -40,7 +32,7 @@ public:
     CREATE_FUNC(GameScene);
     
     //检查是否可以消除，如果可以返回坐标，不可以返回NULL
-    bool checkIsCanPairUp(Coord coord);
+    bool checkIsCanPairUp(CardSprite* card);
     
 private:
     GameScene();
@@ -55,28 +47,28 @@ private:
     //计时器
     void handlerMsg(float dt);
     //交换卡片
-    void exchangeCard(Coord coord1, Coord coord2);
+    void exchangeCard(CardSprite* card1, CardSprite* card2);
     //控制是否移动结束
     void endMoving();
     //消除并升级
-    void pairUpAndLevelUp(Coord coord);
+    void pairUpAndLevelUp(CardSprite* card);
     //card下落
     void cardDrop();
     //根据坐标设置位置
-    void setPositionByCoor(Coord coord, bool isAction = false);
+    void setPositionByCoor(CardSprite* card, bool isAction = false);
     
     Sprite* box;
     Sprite* field;
     Sprite* topSp[TypeNum];
     int level[TypeNum];
     CardSprite* gameTile[TileHor][TileRow];
-    Coord chooseCoord;
-    Coord endCoord;
+    CardSprite* chooseCard;
+    CardSprite* endCard;
     Point startPoint;
     Point endPoint;
     bool isMoving;
     float moveTimer;
-    vector<Coord> pairUpVec;
+    vector<CardSprite*> pairUpVec;
 };
 
 

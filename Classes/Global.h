@@ -51,6 +51,14 @@ enum GameType{
 };
 
 
+struct Coord {
+    
+    int hor;
+    int row;
+    
+};
+
+
 /**
  *  转化字符类函数
  */

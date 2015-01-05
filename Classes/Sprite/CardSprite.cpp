@@ -12,14 +12,14 @@ CardSprite::CardSprite()
 {
     m_Type = GameType_NULL;
     m_Level = TypeLevel_NULL;
-    m_Coord = Vec2(0, 0);
+    setCoord(0, 0);
     isPairUp = false;
 }
 CardSprite::~CardSprite()
 {
     m_Type = GameType_NULL;
     m_Level = TypeLevel_NULL;
-    m_Coord = Vec2(0, 0);
+    setCoord(0, 0);
     isPairUp = true;
 }
 
@@ -56,8 +56,14 @@ void CardSprite::changeCard(GameType _type, TypeLevel _level)
     setLevel(_level);
 }
 
-void CardSprite::moveCard(Vec2 coord){
+void CardSprite::moveCard(Coord coord){
     
     
     
+}
+
+void CardSprite::setCoord(int hor,int row)
+{
+    m_Coord.hor = hor;
+    m_Coord.row = row;
 }
